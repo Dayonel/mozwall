@@ -6,8 +6,26 @@
 </script>
 
 <ModeWatcher />
-<main class="grid grid-rows-[64px,1fr] h-dvh">
-  <Header></Header>
-  <slot />
+<main>
+  <div class="menu-layer">
+    <div class="menu-actions">
+      <Header></Header>
+    </div>
+  </div>
   <Toaster />
+  <slot />
 </main>
+
+<style>
+  main {
+    @apply absolute w-full h-full;
+  }
+
+  .menu-layer {
+    @apply absolute z-10 inset-4 pointer-events-none;
+  }
+
+  .menu-actions {
+    @apply grid grid-cols-[1fr,2fr,1fr] items-center;
+  }
+</style>

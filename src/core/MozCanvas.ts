@@ -5,21 +5,36 @@ class MozCanvas extends fabric.Canvas {
   private isDragging = false;
   private lastPosX = 0;
   private lastPosY = 0;
+  private wheelSensitivity = 0.5;
 
   constructor(element: HTMLCanvasElement | string | null, options?: ICanvasOptions) {
     super(element, options);
     this.zoom();
     this.pan();
+    this.disableResize();
+    this.fireMiddleClick = true;
   }
 
   zoom() {
     this.on('mouse:wheel', (opt) => {
-      var delta = opt.e.deltaY;
-      var zoom = this.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.01) zoom = 0.01;
-      this.setZoom(zoom);
+      var evt = opt.e;
+      if (evt.ctrlKey === true) {
+        // zoom
+        var delta = opt.e.deltaY;
+        var zoom = this.getZoom();
+        zoom *= 0.999 ** delta;
+        if (zoom > 20) zoom = 20;
+        if (zoom < 0.01) zoom = 0.01;
+        const point = new fabric.Point(opt.e.offsetX, opt.e.offsetY);
+        this.zoomToPoint(point, zoom);
+      }
+      else {
+        // pan
+        var delta = -opt.e.deltaY;
+        var panAmount = delta * this.wheelSensitivity;
+        this.relativePan(new fabric.Point(0, panAmount));
+      }
+
       opt.e.preventDefault();
       opt.e.stopPropagation();
     });
@@ -28,13 +43,15 @@ class MozCanvas extends fabric.Canvas {
   pan() {
     this.on('mouse:down', (opt) => {
       var evt = opt.e;
-      if (evt.altKey === true) {
+      if (evt.button === 1) {
+        this.defaultCursor = 'grabbing';
         this.isDragging = true;
         this.selection = false;
         this.lastPosX = evt.clientX;
         this.lastPosY = evt.clientY;
       }
     });
+
     this.on('mouse:move', (opt) => {
       if (this.isDragging) {
         var e = opt.e;
@@ -53,8 +70,16 @@ class MozCanvas extends fabric.Canvas {
       this.setViewportTransform(this.viewportTransform!);
       this.isDragging = false;
       this.selection = true;
+      this.defaultCursor = 'default';
     });
   }
+
+  disableResize = () => {
+    // Disable resizing the page when scrolling
+    window.addEventListener('wheel', (e: WheelEvent) => {
+      e.preventDefault();
+    }, { passive: false });
+  };
 }
 
 export default MozCanvas;

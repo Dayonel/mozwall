@@ -72,9 +72,9 @@
 
 <style>
   a {
-    @apply flex items-center space-x-2 h-14;
+    @apply flex items-center w-fit pointer-events-auto gap-2;
   }
-  
+
   a:hover svg path {
     fill: url(#grad);
   }
