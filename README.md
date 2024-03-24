@@ -12,3 +12,12 @@ To start the project run
 ```
 npm run dev
 ```
+
+## VSCode
+This project uses [shacdn](https://www.shadcn-svelte.com/) component library, you can install the vscode extension [`shadcn/svelte`](https://marketplace.visualstudio.com/items?itemName=Selemondev.vscode-shadcn-svelte).\
+To add a new component run
+```
+ctrl + shift + p
+```
+
+> `shadcn/svelte` Add New Component
