@@ -1,11 +1,12 @@
 <script lang="ts">
   import { fabric } from "fabric";
   import { onMount } from "svelte";
+  import MozCanvas from "../core/MozCanvas";
 
   let canvas: HTMLCanvasElement;
   let fb: fabric.Canvas;
   onMount(() => {
-    fb = new fabric.Canvas(canvas, {
+    fb = new MozCanvas(canvas, {
       width: window.innerWidth,
       height: window.innerHeight,
     });
