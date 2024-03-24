@@ -2,11 +2,11 @@
   import { fabric } from "fabric";
   import { onMount } from "svelte";
   import MozCanvas from "../core/MozCanvas";
+  import { moz } from "../store";
 
   let canvas: HTMLCanvasElement;
-  let fb: fabric.Canvas;
   onMount(() => {
-    fb = new MozCanvas(canvas, {
+    $moz = new MozCanvas(canvas, {
       width: window.innerWidth,
       height: window.innerHeight,
     });
@@ -18,12 +18,12 @@
       height: 15,
       fill: "blue",
     });
-    fb.add(rect);
+    $moz.add(rect);
   });
 
   const resize = () => {
-    fb.setWidth(window.innerWidth);
-    fb.setHeight(window.innerHeight);
+    $moz.setWidth(window.innerWidth);
+    $moz.setHeight(window.innerHeight);
   };
 </script>
 

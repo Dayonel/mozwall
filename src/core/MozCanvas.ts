@@ -6,6 +6,7 @@ class MozCanvas extends fabric.Canvas {
   private lastPosX = 0;
   private lastPosY = 0;
   private wheelSensitivity = 0.5;
+  public isPanning = false;
 
   constructor(element: HTMLCanvasElement | string | null, options?: ICanvasOptions) {
     super(element, options);
@@ -43,8 +44,7 @@ class MozCanvas extends fabric.Canvas {
   pan() {
     this.on('mouse:down', (opt) => {
       var evt = opt.e;
-      if (evt.button === 1) {
-        this.defaultCursor = 'grabbing';
+      if (evt.button === 1 || this.isPanning) {
         this.isDragging = true;
         this.selection = false;
         this.lastPosX = evt.clientX;
@@ -54,6 +54,8 @@ class MozCanvas extends fabric.Canvas {
 
     this.on('mouse:move', (opt) => {
       if (this.isDragging) {
+        this.setCursor('grabbing');
+
         var e = opt.e;
         var vpt = this.viewportTransform!;
         vpt[4] += e.clientX - this.lastPosX;
@@ -70,8 +72,13 @@ class MozCanvas extends fabric.Canvas {
       this.setViewportTransform(this.viewportTransform!);
       this.isDragging = false;
       this.selection = true;
-      this.defaultCursor = 'default';
+      this.defaultCursor = this.isPanning ? 'grab' : 'default';
     });
+  }
+
+  setPanning(isPanning: boolean): void {
+    this.isPanning = isPanning;
+    this.defaultCursor = isPanning ? 'grab' : 'default';
   }
 
   disableResize = () => {
