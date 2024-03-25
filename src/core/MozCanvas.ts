@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 import type { ICanvasOptions } from "fabric/fabric-impl";
+import { mode } from "mode-watcher";
 
 class MozCanvas extends fabric.Canvas {
   private isDragging = false;
@@ -14,10 +15,15 @@ class MozCanvas extends fabric.Canvas {
     this.pan();
     this.disableResize();
     this.fireMiddleClick = true;
+    this.addSplash();
+    mode.subscribe((value) => this.setSplashColor(value)); // dark mode
   }
 
   zoom() {
     this.on('mouse:wheel', (opt) => {
+      const objects = this.getObjects().filter(f => f.type !== 'splash');
+      if (objects.length === 0) return;
+
       var evt = opt.e;
       if (evt.ctrlKey === true) {
         // zoom
@@ -56,6 +62,9 @@ class MozCanvas extends fabric.Canvas {
       if (this.isDragging) {
         this.setCursor('grabbing');
 
+        const objects = this.getObjects().filter(f => f.type !== 'splash');
+        if (objects.length === 0) return;
+
         var e = opt.e;
         var vpt = this.viewportTransform!;
         vpt[4] += e.clientX - this.lastPosX;
@@ -79,6 +88,9 @@ class MozCanvas extends fabric.Canvas {
   setPanning(isPanning: boolean): void {
     this.isPanning = isPanning;
     this.defaultCursor = isPanning ? 'grab' : 'default';
+    if (isPanning) {
+      this.clear();
+    }
   }
 
   disableResize = () => {
@@ -87,6 +99,62 @@ class MozCanvas extends fabric.Canvas {
       e.preventDefault();
     }, { passive: false });
   };
+
+  addSplash() {
+    mode.subscribe((value) => {
+      fabric.loadSVGFromURL("./members.svg", (objects, options) => {
+        objects.forEach((f) => {
+          this.setSplashFillColor(f, value);
+        });
+
+        const obj = fabric.util.groupSVGElements(objects, options);
+        obj.type = "splash";
+        obj.name = "members";
+        obj.selectable = false;
+        obj.evented = false;
+        obj.top = 80;
+        this.centerObjectH(obj);
+        this.add(obj);
+        this.renderAll();
+      });
+
+      fabric.loadSVGFromURL("./export.svg", (objects, options) => {
+        objects.forEach((f) => {
+          this.setSplashFillColor(f, value);
+        })
+
+        const obj = fabric.util.groupSVGElements(objects, options);
+        obj.type = "splash";
+        obj.name = "export";
+        obj.selectable = false;
+        obj.evented = false;
+        obj.top = 80;
+        obj.top = this.getHeight() - obj.height! * 1.5;
+        this.centerObjectH(obj);
+        this.add(obj);
+        this.renderAll();
+      });
+    });
+  }
+
+  setSplashColor(value: string | undefined) {
+    const groups = this.getObjects("splash").reduce((acc, f) => {
+      acc.push(f as fabric.Group);
+      return acc;
+    }, [] as fabric.Group[]);
+
+    groups.forEach((f) => {
+      f?.getObjects().forEach((f) => {
+        this.setSplashFillColor(f, value);
+      });
+    });
+
+    this.renderAll();
+  };
+
+  setSplashFillColor(obj: fabric.Object, value: string | undefined) {
+    obj.set("fill", value === "dark" ? "#71717a" : "#b8b8b8");
+  }
 }
 
 export default MozCanvas;

@@ -3,6 +3,7 @@
   import Header from "$lib/components/Header.svelte";
   import "../app.pcss";
   import { Toaster } from "svelte-sonner";
+  import Export from "$lib/components/Export.svelte";
 </script>
 
 <ModeWatcher />
@@ -11,6 +12,7 @@
     <div class="menu-actions">
       <Header></Header>
     </div>
+    <Export></Export>
   </div>
   <Toaster />
   <slot />
@@ -22,7 +24,7 @@
   }
 
   .menu-layer {
-    @apply absolute z-10 inset-4 pointer-events-none;
+    @apply absolute z-10 inset-4 pointer-events-none grid grid-rows-1;
   }
 
   .menu-actions {
