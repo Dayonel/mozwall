@@ -5,32 +5,24 @@
   import * as Tooltip from "$lib/components/ui/tooltip";
 </script>
 
-<div class="dark-mode">
-  <Tooltip.Root>
-    <Tooltip.Trigger asChild let:builder>
-      <Button
-        builders={[builder]}
-        on:click={toggleMode}
-        variant="outline"
-        size="icon"
-      >
-        <Sun
-          class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-        />
-        <Moon
-          class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-        />
-        <span class="sr-only">Toggle theme</span>
-      </Button>
-    </Tooltip.Trigger>
-    <Tooltip.Content>
-      <p>Dark mode</p>
-    </Tooltip.Content>
-  </Tooltip.Root>
-</div>
-
-<style>
-  .dark-mode {
-    @apply flex w-fit items-center place-self-end pointer-events-auto h-full;
-  }
-</style>
+<Tooltip.Root>
+  <Tooltip.Trigger asChild let:builder>
+    <Button
+      builders={[builder]}
+      on:click={toggleMode}
+      variant="outline"
+      size="icon"
+    >
+      <Sun
+        class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      />
+      <Moon
+        class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      />
+      <span class="sr-only">Toggle theme</span>
+    </Button>
+  </Tooltip.Trigger>
+  <Tooltip.Content>
+    <p>Dark mode</p>
+  </Tooltip.Content>
+</Tooltip.Root>

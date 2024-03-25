@@ -6,7 +6,7 @@ class MozCanvas extends fabric.Canvas {
   private lastPosX = 0;
   private lastPosY = 0;
   private wheelSensitivity = 0.5;
-  public isPanning = false;
+  private isPanning = false;
 
   constructor(element: HTMLCanvasElement | string | null, options?: ICanvasOptions) {
     super(element, options);

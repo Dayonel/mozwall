@@ -26,6 +26,6 @@
   }
 
   .menu-actions {
-    @apply grid grid-cols-[1fr,2fr,1fr] items-center h-[46px];
+    @apply grid grid-cols-[46px,auto] md:grid-cols-[1fr,2fr,1fr] gap-4 items-center h-[46px];
   }
 </style>

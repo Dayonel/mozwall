@@ -8,7 +8,7 @@
     version="1.1"
     viewBox="0 0 25.665 5.8208"
     xmlns="http://www.w3.org/2000/svg"
-    class="hidden sm:block"
+    class="hidden md:block"
   >
     <defs>
       <linearGradient id="grad" x1="100%" y1="0%" x2="0%" y2="0%">

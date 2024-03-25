@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Logo } from "$lib";
-  import Actions from "./Actions.svelte";
-  import DarkMode from "./DarkMode.svelte";
+  import MenuActions from "./MenuActions.svelte";
+  import MenuUtilities from "./MenuUtilities.svelte";
 </script>
 
 <Logo></Logo>
-<Actions></Actions>
-<DarkMode></DarkMode>
+<MenuActions></MenuActions>
+<MenuUtilities></MenuUtilities>
