@@ -16,7 +16,7 @@ class MozCanvas extends fabric.Canvas {
     this.disableResize();
     this.fireMiddleClick = true;
     this.addSplash();
-    mode.subscribe((value) => this.setSplashColor(value)); // dark mode
+    mode.subscribe((value) => this.setSplashColor(value === "dark")); // dark mode
   }
 
   zoom() {
@@ -91,6 +91,12 @@ class MozCanvas extends fabric.Canvas {
     if (isPanning) {
       this.clear();
     }
+    else {
+      const objects = this.getObjects().filter(f => f.type !== 'splash');
+      if (objects.length === 0) {
+        this.addSplash();
+      }
+    }
   }
 
   disableResize = () => {
@@ -101,59 +107,53 @@ class MozCanvas extends fabric.Canvas {
   };
 
   addSplash() {
-    mode.subscribe((value) => {
-      fabric.loadSVGFromURL("./members.svg", (objects, options) => {
-        objects.forEach((f) => {
-          this.setSplashFillColor(f, value);
-        });
+    const dark = document.documentElement.classList.contains('dark');
 
-        const obj = fabric.util.groupSVGElements(objects, options);
-        obj.type = "splash";
-        obj.name = "members";
-        obj.selectable = false;
-        obj.evented = false;
-        obj.top = 80;
-        this.centerObjectH(obj);
-        this.add(obj);
-        this.renderAll();
+    fabric.loadSVGFromURL("./members.svg", (objects, options) => {
+      objects.forEach((f) => {
+        this.setSplashFillColor(f, dark);
       });
 
-      fabric.loadSVGFromURL("./export.svg", (objects, options) => {
-        objects.forEach((f) => {
-          this.setSplashFillColor(f, value);
-        })
+      const obj = fabric.util.groupSVGElements(objects, options);
+      obj.type = "splash";
+      obj.name = "members";
+      obj.selectable = false;
+      obj.evented = false;
+      obj.top = 80;
+      this.centerObjectH(obj);
+      this.add(obj);
+    });
 
-        const obj = fabric.util.groupSVGElements(objects, options);
-        obj.type = "splash";
-        obj.name = "export";
-        obj.selectable = false;
-        obj.evented = false;
-        obj.top = 80;
-        obj.top = this.getHeight() - obj.height! * 1.5;
-        this.centerObjectH(obj);
-        this.add(obj);
-        this.renderAll();
-      });
+    fabric.loadSVGFromURL("./export.svg", (objects, options) => {
+      objects.forEach((f) => {
+        this.setSplashFillColor(f, dark);
+      })
+
+      const obj = fabric.util.groupSVGElements(objects, options);
+      obj.type = "splash";
+      obj.name = "export";
+      obj.selectable = false;
+      obj.evented = false;
+      obj.top = 80;
+      obj.top = this.getHeight() - obj.height! * 1.5;
+      this.centerObjectH(obj);
+      this.add(obj);
     });
   }
 
-  setSplashColor(value: string | undefined) {
-    const groups = this.getObjects("splash").reduce((acc, f) => {
-      acc.push(f as fabric.Group);
-      return acc;
-    }, [] as fabric.Group[]);
-
+  setSplashColor(dark: boolean) {
+    const groups = this.getObjects("splash").map(m => m as fabric.Group);
     groups.forEach((f) => {
-      f?.getObjects().forEach((f) => {
-        this.setSplashFillColor(f, value);
+      f.getObjects().forEach((f) => {
+        this.setSplashFillColor(f, dark);
       });
     });
 
     this.renderAll();
   };
 
-  setSplashFillColor(obj: fabric.Object, value: string | undefined) {
-    obj.set("fill", value === "dark" ? "#71717a" : "#b8b8b8");
+  setSplashFillColor(obj: fabric.Object, dark: boolean) {
+    obj.set("fill", dark ? "#71717a" : "#b8b8b8");
   }
 }
 
