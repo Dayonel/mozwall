@@ -2,6 +2,7 @@
   import { Input } from "./ui/input";
   import { toast } from "svelte-sonner";
   import { moz } from "../../store";
+  import { MozCard } from "../../core/MozCard";
 
   let members: MozMembers[] = [];
   let results: MozMember[] = [];
@@ -11,19 +12,18 @@
 
   const search = async () => {
     try {
-      if (members && members.length > 0) {
-        const exist =
-          members.find((f) => f.page === page && members)!.members.length > 0; // we have this page
+      let exist =
+        members &&
+        members.length > 0 &&
+        members.find((f) => f.page === page && members)!.members.length > 0; // we have this page
 
-        if (exist) {
-          filter();
-          return;
-        }
+      if (!exist) {
+        loading = true;
+        await query();
       }
 
-      loading = true;
-      await query();
       filter();
+      draw();
     } catch (error: any) {
       toast.error("Error fetching data", {
         description: error.message,
@@ -48,16 +48,40 @@
   };
 
   const filter = () => {
-    const match = members.reduce((acc: MozMember[], curr: MozMembers) => {
-      const filter = curr.members.filter((m) =>
-        m.login.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-      return [...acc, ...filter];
-    }, []);
+    console.log(searchTerm);
+    const match = members
+      .map((m) => {
+        return m.members.filter(
+          (f) =>
+            searchTerm &&
+            f.login.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
+      })
+      .flat();
 
     console.log(match);
 
-    results = [...results, ...match];
+    results = match;
+  };
+
+  const draw = () => {
+    $moz.clear();
+    if (results.length === 0) {
+      $moz.resetCanvas();
+    } else {
+      results.forEach((m) => {
+        const mozCard = new MozCard({
+          left: 100,
+          top: 100,
+          name: m.login,
+          avatar: m.avatar_url,
+          url: m.url,
+          rx: 8,
+          ry: 8,
+        });
+        $moz.add(mozCard);
+      });
+    }
   };
 </script>
 
@@ -67,7 +91,7 @@
     placeholder="Search users..."
     class="max-w-full md:max-w-60 lg:max-w-96 h-full"
     bind:value={searchTerm}
-    on:keydown={search}
+    on:input={search}
   />
 
   {#if loading}

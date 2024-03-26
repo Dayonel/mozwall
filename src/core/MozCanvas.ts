@@ -88,15 +88,25 @@ class MozCanvas extends fabric.Canvas {
   setPanning(isPanning: boolean): void {
     this.isPanning = isPanning;
     this.defaultCursor = isPanning ? 'grab' : 'default';
-    if (isPanning) {
-      this.clear();
-    }
-    else {
-      const objects = this.getObjects().filter(f => f.type !== 'splash');
-      if (objects.length === 0) {
+    const objects = this.getObjects().filter(f => f.type !== 'splash');
+
+    if (objects.length === 0) {
+      this.resetCanvas();
+
+      if (isPanning) {
+        this.clear();
+      }
+      else {
         this.addSplash();
       }
     }
+  }
+
+  resetCanvas() {
+    // reset pan & zoom
+    this.setZoom(1);
+    this.viewportTransform![4] = 0;
+    this.viewportTransform![5] = 0;
   }
 
   disableResize = () => {
