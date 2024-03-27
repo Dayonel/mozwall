@@ -65,23 +65,40 @@
   };
 
   const draw = () => {
+    const cardWidth = 200;
+    const cardHeight = 250;
+    const headerHeight = 60;
+    const padding = 16;
     $moz.clear();
     if (results.length === 0) {
       $moz.resetCanvas();
     } else {
       results.forEach((m) => {
         const mozCard = new MozCard({
-          left: 100,
-          top: 100,
+          left: getRandomInterval(padding, $moz.width! - cardWidth, cardWidth),
+          top: getRandomInterval(
+            headerHeight + padding,
+            $moz.height! - cardHeight,
+            cardHeight,
+          ),
           name: m.login,
           avatar: m.avatar_url,
           url: m.url,
-          rx: 8,
-          ry: 8,
+          width: cardWidth,
+          height: cardHeight,
         });
         $moz.add(mozCard);
       });
     }
+  };
+
+  const getRandomInterval = (min: number, max: number, interval: number) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+
+    const numIntervals = Math.floor((max - min) / interval) + 1;
+    const randomIndex = Math.floor(Math.random() * numIntervals);
+    return min + interval * randomIndex;
   };
 </script>
 
