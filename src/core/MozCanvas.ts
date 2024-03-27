@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
 import type { ICanvasOptions } from "fabric/fabric-impl";
 import { mode } from "mode-watcher";
+import { THEME } from "./constants";
 
 class MozCanvas extends fabric.Canvas {
   private isDragging = false;
@@ -16,7 +17,7 @@ class MozCanvas extends fabric.Canvas {
     this.disableResize();
     this.fireMiddleClick = true;
     this.addSplash();
-    mode.subscribe((value) => this.setSplashColor(value === "dark")); // dark mode
+    mode.subscribe((value) => this.theme(value)); // dark mode
   }
 
   zoom() {
@@ -167,7 +168,34 @@ class MozCanvas extends fabric.Canvas {
   };
 
   setSplashFillColor(obj: fabric.Object, dark: boolean) {
-    obj.set("fill", dark ? "#71717a" : "#b8b8b8");
+    obj.set("fill", dark ? THEME.dark.splash.fill : THEME.light.splash.fill);
+  }
+
+  theme(value: string | undefined) {
+    const dark = value === "dark";
+    this.setSplashColor(dark);
+
+    this.getObjects().filter(f => f.type !== "splash").map(m => m as fabric.Group).forEach((f) => {
+      f.getObjects().forEach((f) => {
+        if (f.name === "name") {
+          f.set("fill", dark ? THEME.dark.card.name.fill : THEME.light.card.name.fill);
+        }
+        else if (f.name === "url") {
+          f.set("fill", dark ? THEME.dark.card.url.fill : THEME.light.card.url.fill);
+        }
+        else if (f.name === "github") {
+          (f as fabric.Group).getObjects().forEach((f) => {
+            f.set("stroke", dark ? THEME.dark.card.github.stroke : THEME.light.card.github.stroke);
+          });
+        }
+        else if (f.name === "card") {
+          f.set("fill", dark ? THEME.dark.card.fill : THEME.light.card.fill);
+          f.set("stroke", dark ? THEME.dark.card.stroke : THEME.light.card.stroke);
+        }
+      });
+    });
+
+    this.renderAll();
   }
 }
 
