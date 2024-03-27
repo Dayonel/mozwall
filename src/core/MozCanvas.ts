@@ -112,7 +112,9 @@ class MozCanvas extends fabric.Canvas {
   disableResize = () => {
     // Disable resizing the page when scrolling
     window.addEventListener('wheel', (e: WheelEvent) => {
-      e.preventDefault();
+      if (e.ctrlKey) {
+        e.preventDefault();
+      }
     }, { passive: false });
   };
 
@@ -127,6 +129,7 @@ class MozCanvas extends fabric.Canvas {
       const obj = fabric.util.groupSVGElements(objects, options);
       obj.type = "splash";
       obj.name = "members";
+      obj.excludeFromExport = true;
       obj.selectable = false;
       obj.evented = false;
       obj.top = 80;
@@ -142,6 +145,7 @@ class MozCanvas extends fabric.Canvas {
       const obj = fabric.util.groupSVGElements(objects, options);
       obj.type = "splash";
       obj.name = "export";
+      obj.excludeFromExport = true;
       obj.selectable = false;
       obj.evented = false;
       obj.top = 80;

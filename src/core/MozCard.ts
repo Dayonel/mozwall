@@ -35,7 +35,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
 
     // name
     const name = new fabric.Text(options.name, {
-      top: 10,
+      top: 0,
       fontSize: 20,
       fill: '#fafafa',
       fontFamily: 'Geist',
@@ -64,24 +64,38 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     });
     items = [...items, url];
 
+    // github icon
+    fabric.loadSVGFromURL("./github.svg", (objects, options) => {
+      objects.forEach((f) => {
+        f.set('stroke', '#fafafa');
+      });
+
+      const obj = fabric.util.groupSVGElements(objects, options);
+      const scale = 1;
+      obj.scale(scale);
+      obj.top = options.height + 45;
+      obj.left = -obj.width! * scale / 2; // center
+      obj.hoverCursor = "pointer";
+      this.add(obj);
+    });
+
     // avatar
-    const radius = 100;
+    const radius = 150;
+    const scale = 0.25;
     const circle = new fabric.Circle({
-      width: 300,
-      height: 300,
-      top: -100,
-      left: -50,
+      top: -90,
       radius: radius,
       fill: 'transparent',
-      scaleX: 0.5,
-      scaleY: 0.5,
+      scaleX: scale,
+      scaleY: scale,
     });
+    circle.left = -radius / 4; // center
 
     fabric.util.loadImage(options.avatar, (img) => {
       circle.set('fill', new fabric.Pattern({
         source: img,
         repeat: 'no-repeat',
-        patternTransform: [1, 0, 0, 1, -radius, -radius]
+        patternTransform: [1, 0, 0, 1, -img.width! / 2 + radius, -img.height! / 2 + radius]
       }));
 
       this.canvas.renderAll();

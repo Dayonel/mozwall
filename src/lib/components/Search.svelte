@@ -1,12 +1,11 @@
 <script lang="ts">
   import { Input } from "./ui/input";
   import { toast } from "svelte-sonner";
-  import { moz } from "../../store";
+  import { moz, members } from "../../store";
   import { MozCard } from "../../core/MozCard";
   import { fabric } from "fabric";
 
-  let members: MozMembers[] = [];
-  let results: MozMember[] = [];
+  let data: MozMembers[] = [];
   let searchTerm = "";
   let page = 1;
   let loading = false;
@@ -14,9 +13,9 @@
   const search = async () => {
     try {
       let exist =
-        members &&
-        members.length > 0 &&
-        members.find((f) => f.page === page && members)!.members.length > 0; // we have this page
+        data &&
+        data.length > 0 &&
+        data.find((f) => f.page === page && members)!.members.length > 0; // we have this page
 
       if (!exist) {
         loading = true;
@@ -40,7 +39,7 @@
 
     if (response.ok) {
       const res = await response.json();
-      members = [...members, { page, members: res }];
+      data = [...data, { page, members: res }];
     } else {
       toast.error("Error fetching data", {
         description: response.statusText,
@@ -50,7 +49,7 @@
 
   const filter = () => {
     console.log(searchTerm);
-    const match = members
+    const match = data
       .map((m) => {
         return m.members.filter(
           (f) =>
@@ -62,7 +61,7 @@
 
     console.log(match);
 
-    results = match;
+    $members = match;
   };
 
   const draw = () => {
@@ -71,10 +70,10 @@
     const headerHeight = 60;
     const padding = 16;
     $moz.clear();
-    if (results.length === 0) {
+    if ($members.length === 0) {
       $moz.resetCanvas();
     } else {
-      results.forEach((m) => {
+      $members.forEach((m) => {
         const mozCard = new MozCard({
           left: getRandomInterval(padding, $moz.width! - cardWidth, cardWidth),
           top: getRandomInterval(
@@ -84,7 +83,7 @@
           ),
           name: m.login,
           avatar: m.avatar_url,
-          url: m.url,
+          url: `https://github.com/${m.login}`,
           width: cardWidth,
           height: cardHeight,
         });
