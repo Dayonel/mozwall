@@ -3,6 +3,7 @@
   import { toast } from "svelte-sonner";
   import { moz } from "../../store";
   import { MozCard } from "../../core/MozCard";
+  import { fabric } from "fabric";
 
   let members: MozMembers[] = [];
   let results: MozMember[] = [];
@@ -87,6 +88,11 @@
           width: cardWidth,
           height: cardHeight,
         });
+        mozCard.animate("opacity", "1", {
+          duration: getRandom(500, 1000),
+          onChange: $moz.renderAll.bind($moz),
+          easing: fabric.util.ease.easeInSine,
+        });
         $moz.add(mozCard);
       });
     }
@@ -99,6 +105,12 @@
     const numIntervals = Math.floor((max - min) / interval) + 1;
     const randomIndex = Math.floor(Math.random() * numIntervals);
     return min + interval * randomIndex;
+  };
+
+  const getRandom = (min: number, max: number) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 </script>
 

@@ -13,6 +13,9 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     this.set('width', options.width || 200);
     this.set('height', options.height || 250);
 
+    this.subTargetCheck = true;
+    this.opacity = 0;
+
     let items: fabric.Object[] = [];
 
     // card
@@ -25,7 +28,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       rx: 8,
       ry: 8,
       originX: 'center',
-      originY: 'center'
+      originY: 'center',
     });
 
     items = [...items, card];
@@ -47,24 +50,38 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       fontSize: 8,
       fill: '#a1a1aa',
       fontFamily: 'Geist',
+      hoverCursor: "pointer"
     });
     url.left = -url.width! / 2; // center
+    url.on('mousedown', (e) => this.openUrl(e));
+    url.on('mouseover', () => {
+      url.set('underline', true);
+      this.canvas.renderAll();
+    });
+    url.on('mouseout', () => {
+      url.set('underline', false);
+      this.canvas.renderAll();
+    });
     items = [...items, url];
 
     // avatar
-    const radius = 50;
+    const radius = 100;
     const circle = new fabric.Circle({
+      width: 300,
+      height: 300,
       top: -100,
       left: -50,
       radius: radius,
       fill: 'transparent',
+      scaleX: 0.5,
+      scaleY: 0.5,
     });
 
     fabric.util.loadImage(options.avatar, (img) => {
       circle.set('fill', new fabric.Pattern({
         source: img,
         repeat: 'no-repeat',
-        patternTransform: [0.5, 0, 0, 0.5, -radius / 2, -radius / 2]
+        patternTransform: [1, 0, 0, 1, -radius, -radius]
       }));
 
       this.canvas.renderAll();
@@ -86,4 +103,11 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
   _render: function (ctx: any) {
     this.callSuper('_render', ctx);
   },
+
+  openUrl: function (e: fabric.IEvent) {
+    e.e.preventDefault();
+    e.e.stopPropagation();
+    this.canvas.discardActiveObject();
+    window.open(this.get('url'), '_blank');
+  }
 });
