@@ -38,6 +38,10 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       originY: 'center',
     });
 
+    card.on('mouseover', () => {
+      this.selectable = true;
+    });
+
     this.set('card', card);
 
     items = [...items, card];
@@ -65,7 +69,13 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       hoverCursor: "pointer"
     });
     url.left = -url.width! / 2; // center
-    url.on('mousedown', (e) => this.openUrl(e));
+
+    url.on("mousedown:before", () => {
+      this.selectable = false;
+      this.canvas.discardActiveObject();
+    });
+
+    url.on('mousedown', () => this.openUrl());
     url.on('mouseover', () => {
       url.set('underline', true);
       this.canvas.renderAll();
@@ -149,10 +159,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     this.callSuper('_render', ctx);
   },
 
-  openUrl: function (e: fabric.IEvent) {
-    e.e.preventDefault();
-    e.e.stopPropagation();
-    this.canvas.discardActiveObject();
+  openUrl: function () {
     window.open(this.get('url'), '_blank');
   }
 });
