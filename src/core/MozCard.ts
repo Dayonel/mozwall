@@ -18,6 +18,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     this.subTargetCheck = true;
     this.opacity = 0;
     this.hasControls = false;
+    this.borderColor = 'transparent';
 
     const dark = document.documentElement.classList.contains('dark');
 
@@ -58,6 +59,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       name: 'url',
       top: 40,
       fontSize: 10,
+      fontWeight: 'bold',
       fill: dark ? THEME.dark.card.url.fill : THEME.light.card.url.fill,
       fontFamily: 'Dosis',
       hoverCursor: "pointer"
@@ -123,11 +125,15 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
 
     this.on('mouseover', () => {
       this.get('card').set('fill', dark ? THEME.dark.card.hover : THEME.light.card.hover);
+      this.get('card').set('stroke', dark ? THEME.dark.card.highlightStroke : THEME.light.card.highlightStroke);
+      this.get('card').set('strokeWidth', 2);
       this.canvas.renderAll();
     });
 
     this.on('mouseout', () => {
       this.get('card').set('fill', dark ? THEME.dark.card.fill : THEME.light.card.fill);
+      this.get('card').set('stroke', dark ? THEME.dark.card.stroke : THEME.light.card.stroke);
+      this.get('card').set('strokeWidth', 0.5);
       this.canvas.renderAll();
     });
 

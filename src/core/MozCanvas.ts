@@ -19,6 +19,7 @@ class MozCanvas extends fabric.Canvas {
     this.addSplash();
     mode.subscribe((value) => this.theme(value)); // dark mode
     this.hoverCursor = 'grab';
+    this.listenRemoveSplash();
   }
 
   zoom() {
@@ -201,6 +202,17 @@ class MozCanvas extends fabric.Canvas {
     });
 
     this.renderAll();
+  }
+
+  listenRemoveSplash() {
+    this.on("object:added", (o) => {
+      const target = o.target;
+      if (target && target.type !== "splash") {
+        this.getObjects("splash").forEach((f) => {
+          this.remove(f);
+        });
+      }
+    })
   }
 }
 

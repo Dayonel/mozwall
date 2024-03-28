@@ -22,8 +22,8 @@
         await query();
       }
 
-      filter();
-      draw();
+      const add = filter();
+      draw(add);
     } catch (error: any) {
       toast.error("Error fetching data", {
         description: error.message,
@@ -48,8 +48,7 @@
   };
 
   const filter = () => {
-    console.log(searchTerm);
-    const match = data
+    return data
       .map((m) => {
         return m.members.filter(
           (f) =>
@@ -58,43 +57,60 @@
         );
       })
       .flat();
-
-    console.log(match);
-
-    $members = match;
   };
 
-  const draw = () => {
+  const draw = (members: MozMember[]) => {
+    console.log($members.length);
+
     const cardWidth = 200;
     const cardHeight = 200;
     const headerHeight = 60;
     const padding = 16;
-    $moz.clear();
-    if ($members.length === 0) {
-      $moz.resetCanvas();
-    } else {
-      $members.forEach((m) => {
-        const mozCard = new MozCard({
-          left: getRandomInterval(padding, $moz.width! - cardWidth, cardWidth),
-          top: getRandomInterval(
-            headerHeight + padding,
-            $moz.height! - cardHeight,
-            cardHeight,
-          ),
-          name: m.login,
-          avatar: m.avatar_url,
-          url: `https://github.com/${m.login}`,
-          width: cardWidth,
-          height: cardHeight,
-        });
-        mozCard.animate("opacity", "1", {
-          duration: getRandom(500, 1000),
-          onChange: $moz.renderAll.bind($moz),
-          easing: fabric.util.ease.easeInSine,
-        });
-        $moz.add(mozCard);
+
+    const items = $moz.getObjects();
+    const remove = $members.filter(
+      (m) => !members.some((s) => s.login === m.login),
+    );
+    remove.forEach((r) => {
+      const item = items.find((f) => f.name === r.login)!;
+      item.animate("opacity", "0", {
+        duration: 200,
+        onChange: $moz.renderAll.bind($moz),
+        onComplete: () => $moz.remove(item),
+        easing: fabric.util.ease.easeInOutCubic,
       });
-    }
+    });
+
+    const add = members.filter(
+      (m) => !$members.some((s) => s.login === m.login),
+    );
+    add.forEach((m) => {
+      const mozCard = new MozCard({
+        left: getRandomInterval(
+          padding,
+          $moz.width! - cardWidth,
+          cardWidth + padding,
+        ),
+        top: getRandomInterval(
+          headerHeight + padding,
+          $moz.height! - cardHeight,
+          cardHeight + padding,
+        ),
+        name: m.login,
+        avatar: m.avatar_url,
+        url: `https://github.com/${m.login}`,
+        width: cardWidth,
+        height: cardHeight,
+      });
+      mozCard.animate("opacity", "1", {
+        duration: 200,
+        onChange: $moz.renderAll.bind($moz),
+        easing: fabric.util.ease.easeInOutCubic,
+      });
+      $moz.add(mozCard);
+    });
+
+    $members = members;
   };
 
   const getRandomInterval = (min: number, max: number, interval: number) => {
@@ -104,12 +120,6 @@
     const numIntervals = Math.floor((max - min) / interval) + 1;
     const randomIndex = Math.floor(Math.random() * numIntervals);
     return min + interval * randomIndex;
-  };
-
-  const getRandom = (min: number, max: number) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 </script>
 
