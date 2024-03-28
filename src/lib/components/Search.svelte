@@ -66,7 +66,7 @@
 
   const draw = () => {
     const cardWidth = 200;
-    const cardHeight = 250;
+    const cardHeight = 200;
     const headerHeight = 60;
     const padding = 16;
     $moz.clear();

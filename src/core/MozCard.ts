@@ -7,6 +7,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
   // no other signatures allowed.
   initialize: function (options: any) {
     options || (options = {});
+    this.hoverCallback();
 
     this.set('name', options.name || '');
     this.set('avatar', options.avatar || '');
@@ -16,6 +17,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
 
     this.subTargetCheck = true;
     this.opacity = 0;
+    this.hasControls = false;
 
     const dark = document.documentElement.classList.contains('dark');
 
@@ -29,21 +31,23 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       fill: dark ? THEME.dark.card.fill : THEME.light.card.fill,
       stroke: dark ? THEME.dark.card.stroke : THEME.light.card.stroke,
       strokeWidth: 0.5,
-      rx: 8,
-      ry: 8,
+      rx: 15,
+      ry: 15,
       originX: 'center',
       originY: 'center',
     });
+
+    this.set('card', card);
 
     items = [...items, card];
 
     // name
     const name = new fabric.Text(options.name, {
       name: 'name',
-      top: 0,
+      top: 15,
       fontSize: 20,
       fill: dark ? THEME.dark.card.name.fill : THEME.light.card.name.fill,
-      fontFamily: 'Geist',
+      fontFamily: 'Dosis',
       fontWeight: 'bold',
     });
     name.left = -name.width! / 2; // center
@@ -52,10 +56,10 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     // url
     const url = new fabric.Text(options.url, {
       name: 'url',
-      top: 100,
-      fontSize: 8,
+      top: 40,
+      fontSize: 10,
       fill: dark ? THEME.dark.card.url.fill : THEME.light.card.url.fill,
-      fontFamily: 'Geist',
+      fontFamily: 'Dosis',
       hoverCursor: "pointer"
     });
     url.left = -url.width! / 2; // center
@@ -80,18 +84,18 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       const scale = 1;
       obj.name = 'github';
       obj.scale(scale);
-      obj.top = options.height + 45;
+      obj.top = options.height + 35;
       obj.left = -obj.width! * scale / 2; // center
       obj.hoverCursor = "pointer";
       this.add(obj);
     });
 
     // avatar
-    const radius = 150;
+    const radius = 140;
     const scale = 0.25;
     const circle = new fabric.Circle({
       name: 'avatar',
-      top: -90,
+      top: -70,
       radius: radius,
       fill: 'transparent',
       scaleX: scale,
@@ -112,6 +116,21 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     items = [...items, circle];
 
     this.callSuper('initialize', items, options);
+  },
+
+  hoverCallback: function () {
+    const dark = document.documentElement.classList.contains('dark');
+
+    this.on('mouseover', () => {
+      this.get('card').set('fill', dark ? THEME.dark.card.hover : THEME.light.card.hover);
+      this.canvas.renderAll();
+    });
+
+    this.on('mouseout', () => {
+      this.get('card').set('fill', dark ? THEME.dark.card.fill : THEME.light.card.fill);
+      this.canvas.renderAll();
+    });
+
   },
 
   toObject: function () {

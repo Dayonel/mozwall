@@ -18,6 +18,7 @@ class MozCanvas extends fabric.Canvas {
     this.fireMiddleClick = true;
     this.addSplash();
     mode.subscribe((value) => this.theme(value)); // dark mode
+    this.hoverCursor = 'grab';
   }
 
   zoom() {
@@ -176,6 +177,10 @@ class MozCanvas extends fabric.Canvas {
     this.setSplashColor(dark);
 
     this.getObjects().filter(f => f.type !== "splash").map(m => m as fabric.Group).forEach((f) => {
+      // @ts-ignore
+      f.hoverCallback(); // refresh hover
+
+      // children
       f.getObjects().forEach((f) => {
         if (f.name === "name") {
           f.set("fill", dark ? THEME.dark.card.name.fill : THEME.light.card.name.fill);

@@ -2,14 +2,26 @@
   import { onMount } from "svelte";
   import MozCanvas from "../core/MozCanvas";
   import { moz } from "../store";
+  import { toast } from "svelte-sonner";
+  import FontFaceObserver from "fontfaceobserver";
 
   let canvas: HTMLCanvasElement;
 
   onMount(() => {
-    $moz = new MozCanvas(canvas, {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
+    // preload fonts
+    var font = new FontFaceObserver("Dosis");
+    font.load().then(
+      () => {
+        console.log("Font has loaded.");
+        $moz = new MozCanvas(canvas, {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      },
+      () => {
+        toast.error("Font is not available");
+      },
+    );
   });
 
   const resize = () => {

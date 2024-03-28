@@ -1,7 +1,8 @@
 <script lang="ts">
+  import "../app.pcss";
+  import "./styles.css";
   import { ModeWatcher } from "mode-watcher";
   import Header from "$lib/components/Header.svelte";
-  import "../app.pcss";
   import { Toaster } from "svelte-sonner";
   import Export from "$lib/components/Export.svelte";
 </script>

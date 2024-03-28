@@ -2,6 +2,7 @@ export const THEME = {
   dark: {
     card: {
       fill: 'black',
+      hover: '#27272a',
       stroke: '#27272a',
       name: {
         fill: '#fafafa',
@@ -21,6 +22,7 @@ export const THEME = {
   light: {
     card: {
       fill: 'white',
+      hover: '#f4f4f5',
       stroke: '#e4e4e7',
       name: {
         fill: '#27272a',
