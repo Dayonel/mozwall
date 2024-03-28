@@ -31,7 +31,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       height: options.height,
       fill: dark ? THEME.dark.card.fill : THEME.light.card.fill,
       stroke: dark ? THEME.dark.card.stroke : THEME.light.card.stroke,
-      strokeWidth: 0.5,
+      strokeWidth: 2,
       rx: 15,
       ry: 15,
       originX: 'center',
@@ -126,14 +126,12 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     this.on('mouseover', () => {
       this.get('card').set('fill', dark ? THEME.dark.card.hover : THEME.light.card.hover);
       this.get('card').set('stroke', dark ? THEME.dark.card.highlightStroke : THEME.light.card.highlightStroke);
-      this.get('card').set('strokeWidth', 2);
       this.canvas.renderAll();
     });
 
     this.on('mouseout', () => {
       this.get('card').set('fill', dark ? THEME.dark.card.fill : THEME.light.card.fill);
       this.get('card').set('stroke', dark ? THEME.dark.card.stroke : THEME.light.card.stroke);
-      this.get('card').set('strokeWidth', 0.5);
       this.canvas.renderAll();
     });
 

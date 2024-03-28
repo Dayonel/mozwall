@@ -19,6 +19,7 @@ class MozCanvas extends fabric.Canvas {
     this.addSplash();
     mode.subscribe((value) => this.theme(value)); // dark mode
     this.hoverCursor = 'grab';
+    this.selection = false;
     this.listenRemoveSplash();
   }
 
@@ -52,29 +53,39 @@ class MozCanvas extends fabric.Canvas {
 
   pan() {
     this.on('mouse:down', (opt) => {
-      var evt = opt.e;
+      let evt = opt.e as MouseEvent;
+      // @ts-ignore
+      if (opt.e.touches && opt.e.touches.length > 0) {
+        // @ts-ignore
+        evt = opt.e.touches[0] as TouchEvent;
+      }
+
       if (evt.button === 1 || this.isPanning) {
         this.isDragging = true;
-        this.selection = false;
         this.lastPosX = evt.clientX;
         this.lastPosY = evt.clientY;
       }
     });
 
     this.on('mouse:move', (opt) => {
+      var evt = opt.e as MouseEvent;
+      // @ts-ignore
+      if (opt.e.touches && opt.e.touches.length > 0) {
+        // @ts-ignore
+        evt = opt.e.touches[0] as TouchEvent;
+      }
       if (this.isDragging) {
         this.setCursor('grabbing');
 
         const objects = this.getObjects().filter(f => f.type !== 'splash');
         if (objects.length === 0) return;
 
-        var e = opt.e;
         var vpt = this.viewportTransform!;
-        vpt[4] += e.clientX - this.lastPosX;
-        vpt[5] += e.clientY - this.lastPosY;
+        vpt[4] += evt.clientX - this.lastPosX;
+        vpt[5] += evt.clientY - this.lastPosY;
         this.requestRenderAll();
-        this.lastPosX = e.clientX;
-        this.lastPosY = e.clientY;
+        this.lastPosX = evt.clientX;
+        this.lastPosY = evt.clientY;
       }
     });
 
@@ -83,7 +94,6 @@ class MozCanvas extends fabric.Canvas {
       // for all objects, so we call setViewportTransform
       this.setViewportTransform(this.viewportTransform!);
       this.isDragging = false;
-      this.selection = true;
       this.defaultCursor = this.isPanning ? 'grab' : 'default';
     });
   }
@@ -102,6 +112,12 @@ class MozCanvas extends fabric.Canvas {
       else {
         this.addSplash();
       }
+    }
+    else {
+      objects.forEach((f) => {
+        f.selectable = !isPanning;
+        f.evented = !isPanning;
+      });
     }
   }
 
