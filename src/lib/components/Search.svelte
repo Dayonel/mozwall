@@ -4,6 +4,7 @@
   import { moz, members } from "../../store";
   import { MozCard } from "../../core/MozCard";
   import { fabric } from "fabric";
+  import { getIntervalPosition } from "../../core/utils";
 
   let data: MozMembers[] = [];
   let searchTerm = "";
@@ -64,7 +65,6 @@
 
     const cardWidth = 200;
     const cardHeight = 200;
-    const headerHeight = 60;
     const padding = 16;
 
     const items = $moz.getObjects();
@@ -84,18 +84,18 @@
     const add = members.filter(
       (m) => !$members.some((s) => s.login === m.login),
     );
-    add.forEach((m) => {
+    add.forEach((m, i) => {
+      const position = getIntervalPosition(
+        i,
+        padding,
+        cardWidth,
+        cardHeight,
+        $moz.width!,
+        $moz.height!,
+      );
       const mozCard = new MozCard({
-        left: getRandomInterval(
-          padding,
-          $moz.width! - cardWidth,
-          cardWidth + padding,
-        ),
-        top: getRandomInterval(
-          headerHeight + padding,
-          $moz.height! - cardHeight,
-          cardHeight + padding,
-        ),
+        left: position.x,
+        top: position.y,
         name: m.login,
         avatar: m.avatar_url,
         url: `https://github.com/${m.login}`,
@@ -111,15 +111,6 @@
     });
 
     $members = members;
-  };
-
-  const getRandomInterval = (min: number, max: number, interval: number) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-
-    const numIntervals = Math.floor((max - min) / interval) + 1;
-    const randomIndex = Math.floor(Math.random() * numIntervals);
-    return min + interval * randomIndex;
   };
 </script>
 

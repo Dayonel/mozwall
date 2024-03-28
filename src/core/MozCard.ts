@@ -13,7 +13,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     this.set('avatar', options.avatar || '');
     this.set('url', options.url || '');
     this.set('width', options.width || 200);
-    this.set('height', options.height || 250);
+    this.set('height', options.height || 200);
 
     this.subTargetCheck = true;
     this.opacity = 0;
