@@ -2,6 +2,9 @@ import { fabric } from "fabric";
 import type { ICanvasOptions } from "fabric/fabric-impl";
 import { mode } from "mode-watcher";
 import { THEME } from "./constants";
+import { MozCard } from "./MozCard";
+import { getIntervalPosition } from "./utils";
+import { members } from "../store";
 
 class MozCanvas extends fabric.Canvas {
   private isDragging = false;
@@ -21,6 +24,7 @@ class MozCanvas extends fabric.Canvas {
     this.hoverCursor = 'grab';
     this.selection = false;
     this.listenRemoveSplash();
+    this.redraw();
   }
 
   zoom() {
@@ -229,6 +233,66 @@ class MozCanvas extends fabric.Canvas {
         });
       }
     })
+  }
+
+  addItem(item: MozMember) {
+    const cardWidth = 200;
+    const cardHeight = 200;
+    const padding = 16;
+    let index = this.size() > 0 ? this.size() - 1 : 0;
+
+    const position = getIntervalPosition(
+      index,
+      padding,
+      cardWidth,
+      cardHeight,
+      this.width!,
+      this.height!,
+    );
+
+    const mozCard = new MozCard({
+      left: position.x,
+      top: position.y,
+      name: item.login,
+      avatar: item.avatar_url,
+      url: `https://github.com/${item.login}`,
+      width: cardWidth,
+      height: cardHeight,
+    });
+    mozCard.animate("opacity", "1", {
+      duration: 200,
+      onChange: this.renderAll.bind(this),
+      easing: fabric.util.ease.easeInOutCubic,
+    });
+    this.add(mozCard);
+  }
+
+  removeItem(item: fabric.Object) {
+    item.animate("opacity", "0", {
+      duration: 200,
+      onChange: this.renderAll.bind(this),
+      onComplete: () => this.remove(item),
+      easing: fabric.util.ease.easeInOutCubic,
+    });
+  }
+
+  redraw() {
+    members.subscribe((items) => {
+      const objects = this.getObjects().filter((f) => f.type !== "splash");
+      var current = new Map(objects.map((i) => [i.name!, i]));
+
+      for (const [key, curr] of current) {
+        if (!items.has(key)) {
+          this.removeItem(curr);
+        }
+      }
+
+      for (const [key, curr] of items) {
+        if (!current.has(key)) {
+          this.addItem(curr);
+        }
+      }
+    });
   }
 }
 
