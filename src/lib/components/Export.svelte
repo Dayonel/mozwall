@@ -17,7 +17,7 @@
       if (event.ctrlKey && event.key === "s") {
         event.preventDefault();
 
-        if (!$members || $members.length === 0) {
+        if (!$members || $members.size === 0) {
           toast.info("No members for search criteria", {
             description: "Please search for members first",
           });
@@ -34,14 +34,14 @@
   };
 </script>
 
-<div class="export" class:enabled={$members && $members.length > 0}>
+<div class="export" class:enabled={$members && $members.size > 0}>
   <Sheet.Root bind:open>
     <Sheet.Trigger asChild let:builder>
       <Button
         builders={[builder]}
         variant="outline"
         class="w-full max-w-xl h-12"
-        disabled={!$members || $members.length === 0}
+        disabled={!$members || $members.size === 0}
       >
         <Download class="h-[1.2rem] w-[1.2rem] mr-2" />
         Export

@@ -1,10 +1,7 @@
 <script lang="ts">
   import { Input } from "./ui/input";
   import { toast } from "svelte-sonner";
-  import { moz, members } from "../../store";
-  import { MozCard } from "../../core/MozCard";
-  import { fabric } from "fabric";
-  import { getIntervalPosition } from "../../core/utils";
+  import { members } from "../../store";
 
   let data: MozMembers[] = [];
   let searchTerm = "";
@@ -23,8 +20,7 @@
         await query();
       }
 
-      const add = filter();
-      draw(add);
+      $members = filter();
     } catch (error: any) {
       toast.error("Error fetching data", {
         description: error.message,
@@ -34,83 +30,35 @@
     }
   };
 
-  const query = async () => {
+  const query = async (): Promise<MozMembers[]> => {
     const url = `https://api.github.com/orgs/mozilla/members?page=${page}`;
     const response = await fetch(url);
 
     if (response.ok) {
       const res = await response.json();
-      data = [...data, { page, members: res }];
+      return (data = [...data, { page, members: res }]);
     } else {
       toast.error("Error fetching data", {
         description: response.statusText,
       });
     }
+
+    return [];
   };
 
   const filter = () => {
-    return data
-      .map((m) => {
-        return m.members.filter(
-          (f) =>
-            searchTerm &&
-            f.login.toLowerCase().includes(searchTerm.toLowerCase()),
-        );
-      })
-      .flat();
-  };
-
-  const draw = (members: MozMember[]) => {
-    console.log($members.length);
-
-    const cardWidth = 200;
-    const cardHeight = 200;
-    const padding = 16;
-
-    const items = $moz.getObjects();
-    const remove = $members.filter(
-      (m) => !members.some((s) => s.login === m.login),
+    return new Map(
+      data
+        .map((m) => {
+          return m.members.filter(
+            (f) =>
+              searchTerm &&
+              f.login.toLowerCase().includes(searchTerm.toLowerCase()),
+          );
+        })
+        .flat()
+        .map((m) => [m.login, m]),
     );
-    remove.forEach((r) => {
-      const item = items.find((f) => f.name === r.login)!;
-      item.animate("opacity", "0", {
-        duration: 200,
-        onChange: $moz.renderAll.bind($moz),
-        onComplete: () => $moz.remove(item),
-        easing: fabric.util.ease.easeInOutCubic,
-      });
-    });
-
-    const add = members.filter(
-      (m) => !$members.some((s) => s.login === m.login),
-    );
-    add.forEach((m, i) => {
-      const position = getIntervalPosition(
-        i,
-        padding,
-        cardWidth,
-        cardHeight,
-        $moz.width!,
-        $moz.height!,
-      );
-      const mozCard = new MozCard({
-        left: position.x,
-        top: position.y,
-        name: m.login,
-        avatar: m.avatar_url,
-        url: `https://github.com/${m.login}`,
-        width: cardWidth,
-        height: cardHeight,
-      });
-      mozCard.animate("opacity", "1", {
-        duration: 200,
-        onChange: $moz.renderAll.bind($moz),
-        easing: fabric.util.ease.easeInOutCubic,
-      });
-      $moz.add(mozCard);
-    });
-
-    $members = members;
   };
 </script>
 

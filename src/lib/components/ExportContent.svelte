@@ -36,11 +36,11 @@
     </Sheet.Description>
   </Sheet.Header>
   <ScrollArea class="h-full w-full">
-    {#each $members as member}
+    {#each $members as [key, value]}
       <Card.Root class="mb-2 max-w-60 md:max-w-full">
         <Card.Header class="p-4">
-          <Card.Title>{member.login}</Card.Title>
-          <Card.Description class="truncate">{member.url}</Card.Description>
+          <Card.Title>{key}</Card.Title>
+          <Card.Description class="truncate">{value.url}</Card.Description>
         </Card.Header>
       </Card.Root>
     {/each}
