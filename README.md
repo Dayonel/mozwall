@@ -2,15 +2,20 @@
 Mozwall is an interactive canvas application that displays members of the Mozilla organization.
 
 ## Installation
+Install `pnpm`
+```
+npm install -g pnpm
+```
+
 Install dependencies
 ```
-npm i
+pnpm i
 ```
 
 ## Start
 To start the project run
 ```
-npm run dev
+pnpm run dev
 ```
 
 ## Controls

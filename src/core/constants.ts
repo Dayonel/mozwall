@@ -9,10 +9,10 @@ export const THEME = {
         fill: '#fafafa',
       },
       url: {
-        fill: '#a1a1aa',
+        fill: '#fafafa',
       },
       github: {
-        stroke: '#fafafa',
+        fill: '#dedede',
       },
     },
     splash: {
@@ -29,10 +29,10 @@ export const THEME = {
         fill: '#27272a',
       },
       url: {
-        fill: '#71717a',
+        fill: '#27272a',
       },
       github: {
-        stroke: '#27272a',
+        fill: '#27272a',
       },
     },
     splash: {

@@ -9,7 +9,7 @@
 
   onMount(() => {
     // preload fonts
-    var font = new FontFaceObserver("Dosis");
+    var font = new FontFaceObserver("Handjet");
     font.load().then(
       () => {
         console.log("Font has loaded.");

@@ -12,6 +12,11 @@ class MozCanvas extends fabric.Canvas {
   private lastPosY = 0;
   private wheelSensitivity = 0.5;
   private isPanning = false;
+  private cardWidth = 200;
+  private cardHeight = 230;
+  private padding = 16;
+  private sync = new Map();
+
 
   constructor(element: HTMLCanvasElement | string | null, options?: ICanvasOptions) {
     super(element, options);
@@ -25,6 +30,7 @@ class MozCanvas extends fabric.Canvas {
     this.selection = false;
     this.listenRemoveSplash();
     this.redraw();
+    this.sync = new Map(this.getObjects().filter(f => f.type !== "splash").map((i) => [i.name!, i]));
   }
 
   zoom() {
@@ -210,9 +216,7 @@ class MozCanvas extends fabric.Canvas {
           f.set("fill", dark ? THEME.dark.card.url.fill : THEME.light.card.url.fill);
         }
         else if (f.name === "github") {
-          (f as fabric.Group).getObjects().forEach((f) => {
-            f.set("stroke", dark ? THEME.dark.card.github.stroke : THEME.light.card.github.stroke);
-          });
+          f.set("fill", dark ? THEME.dark.card.github.fill : THEME.light.card.github.fill);
         }
         else if (f.name === "card") {
           f.set("fill", dark ? THEME.dark.card.fill : THEME.light.card.fill);
@@ -232,39 +236,26 @@ class MozCanvas extends fabric.Canvas {
           this.remove(f);
         });
       }
-    })
+    });
   }
 
   addItem(item: MozMember) {
-    const cardWidth = 200;
-    const cardHeight = 200;
-    const padding = 16;
-    let index = this.size() > 0 ? this.size() - 1 : 0;
-
-    const position = getIntervalPosition(
-      index,
-      padding,
-      cardWidth,
-      cardHeight,
-      this.width!,
-      this.height!,
-    );
-
     const mozCard = new MozCard({
-      left: position.x,
-      top: position.y,
       name: item.login,
       avatar: item.avatar_url,
       url: `https://github.com/${item.login}`,
-      width: cardWidth,
-      height: cardHeight,
+      width: this.cardWidth,
+      height: this.cardHeight,
     });
+
     mozCard.animate("opacity", "1", {
       duration: 200,
       onChange: this.renderAll.bind(this),
       easing: fabric.util.ease.easeInOutCubic,
     });
     this.add(mozCard);
+
+    return mozCard;
   }
 
   removeItem(item: fabric.Object) {
@@ -281,16 +272,37 @@ class MozCanvas extends fabric.Canvas {
       const objects = this.getObjects().filter((f) => f.type !== "splash");
       var current = new Map(objects.map((i) => [i.name!, i]));
 
+      // remove items (async)
       for (const [key, curr] of current) {
         if (!items.has(key)) {
           this.removeItem(curr);
+          this.sync.delete(key);
         }
       }
 
+      // add items
       for (const [key, curr] of items) {
         if (!current.has(key)) {
-          this.addItem(curr);
+          const item = this.addItem(curr);
+          this.sync.set(key, item);
         }
+      }
+
+      // place items in order
+      let i = 0;
+      for (const [_, curr] of this.sync) {
+        const position = getIntervalPosition(
+          i,
+          this.padding,
+          this.cardWidth,
+          this.cardHeight,
+          this.width!,
+          this.height!,
+        );
+
+        curr.left = position.x;
+        curr.top = position.y;
+        i++;
       }
     });
   }

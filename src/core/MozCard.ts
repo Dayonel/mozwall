@@ -32,8 +32,8 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
       fill: dark ? THEME.dark.card.fill : THEME.light.card.fill,
       stroke: dark ? THEME.dark.card.stroke : THEME.light.card.stroke,
       strokeWidth: 2,
-      rx: 15,
-      ry: 15,
+      rx: 4,
+      ry: 4,
       originX: 'center',
       originY: 'center',
     });
@@ -49,10 +49,10 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     // name
     const name = new fabric.Text(options.name, {
       name: 'name',
-      top: 15,
-      fontSize: 20,
+      top: 60,
+      fontSize: 21,
       fill: dark ? THEME.dark.card.name.fill : THEME.light.card.name.fill,
-      fontFamily: 'Dosis',
+      fontFamily: 'Handjet',
       fontWeight: 'bold',
     });
     name.left = -name.width! / 2; // center
@@ -61,11 +61,11 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     // url
     const url = new fabric.Text(options.url, {
       name: 'url',
-      top: 40,
-      fontSize: 10,
+      top: 85,
+      fontSize: 11,
       fontWeight: 'bold',
       fill: dark ? THEME.dark.card.url.fill : THEME.light.card.url.fill,
-      fontFamily: 'Dosis',
+      fontFamily: 'Handjet',
       hoverCursor: "pointer"
     });
     url.left = -url.width! / 2; // center
@@ -86,18 +86,14 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     });
     items = [...items, url];
 
-    // github icon
-    fabric.loadSVGFromURL("./github.svg", (objects, options) => {
-      objects.forEach((f) => {
-        f.set('stroke', dark ? THEME.dark.card.github.stroke : THEME.light.card.github.stroke);
-      });
-
+    // mozilla icon
+    fabric.loadSVGFromURL("./mozilla.svg", (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options);
-      const scale = 1;
       obj.name = 'github';
-      obj.scale(scale);
-      obj.top = options.height + 35;
-      obj.left = -obj.width! * scale / 2; // center
+      obj.fill = dark ? THEME.dark.card.github.fill : THEME.light.card.github.fill;
+      obj.top = options.height + 5;
+      obj.width = 30;
+      obj.height = 30;
       obj.hoverCursor = "pointer";
       this.add(obj);
     });
@@ -107,7 +103,7 @@ export const MozCard = fabric.util.createClass(fabric.Group, {
     const scale = 0.25;
     const circle = new fabric.Circle({
       name: 'avatar',
-      top: -70,
+      top: -80,
       radius: radius,
       fill: 'transparent',
       scaleX: scale,
